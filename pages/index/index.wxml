@@ -1,0 +1,99 @@
+<import src="../../utils/template/template.wxml" />
+<view class='kefu'>
+  <image src='../../utils/img/kefu.png' class='card-img'>
+    <button open-type="contact" class='card-img' style="opacity:0">进入客服会话</button>
+  </image>
+  
+</view>
+
+<view class="page" >
+  <view class="page__bd">
+  
+    <view class="weui-search-bar">
+    <!--定位区域开始-->
+    <navigator class="location" url="../cityselect/cityselect" open-type="redirect">
+  <view class='location'>
+  <view>
+  
+  {{city}}
+  </view> 
+ 
+ 
+ <view><image src='../../utils/img/shrink.png'></image></view> 
+  
+  </view>
+  </navigator>
+  <!--定位区域结束-->
+      <view class="weui-search-bar__form">
+        <view class="weui-search-bar__box">
+          <icon class="weui-icon-search_in-box" type="search" size="14"></icon>
+          <input type="text" class="weui-search-bar__input" placeholder="搜索" value="{{inputVal}}" focus="{{inputShowed}}" bindinput="inputTyping" />
+          <view class="weui-icon-clear" wx:if="{{inputVal.length > 0}}" bindtap="clearInput">
+            <icon type="clear" size="14"></icon>
+          </view>
+        </view>
+        <label class="weui-search-bar__label" hidden="{{inputShowed}}" bindtap="showInput">
+          <icon class="weui-icon-search" type="search" size="14"></icon>
+          <view class="weui-search-bar__text">搜索</view>
+        </label>
+      </view>
+      <view class="weui-search-bar__cancel-btn" hidden="{{!inputShowed}}" bindtap="hideInput">取消</view>
+    </view>
+
+  </view>
+ <scroll-view style="height:{{screenHeight-49-50-51}}px" scroll-y bindscrolltolower="bindscrolltolower" bindscrolltoupper="bindscrolltoupper">
+  <!-- <view class="page__bd" >  -->
+    <view class="weui-panel weui-panel_access" >
+      <view class="weui-panel__hd">设备列表</view>
+      <view class="weui-panel__bd">
+        <block wx:for="{{list_data}}" wx:key="">
+        <view class='index-navigator'>
+<view class='icon-wrapper' catchtap="selectList" data-index="{{index}}" hidden='{{selectshow}}'>
+    <icon wx:if="{{item.selected}}" class='cart-icon' type="success" color="red"  />
+    <icon wx:else type="circle" class='cart-icon'  />
+    </view> 
+          <navigator url='/pages/details/details?mac={{item.deviceId}}' class="weui-media-box weui-media-box_appmsg" hover-class="weui-cell_active" open-type="redirect">
+            <view class="weui-media-box__hd weui-media-box__hd_in-appmsg">
+              <image class="weui-media-box__thumb" src="{{item.imgs}}"  data-index='{{item.imgs}}' />
+            </view>
+            <view class="weui-media-box__bd weui-media-box__bd_in-appmsg">
+              <view class="weui-media-box__title">{{item.deviceName}}</view>
+              <view class="weui-media-box__desc">{{item.address}}</view>
+              <view class="weui-distance">
+                <text>距离{{item.distance}}km</text>
+ <text>价格:￥{{item.products[0].price}}</text>
+                <!-- 点击加  点击事件catchtap='middlejia'-->
+                <image  style='background:#cb003c;' src='../../utils/img/gouwu.png' data-pid='{{item.products[0].id}}' catchtap='addShop'></image>
+
+                <!-- 飞入图标 {hide_good_box-->
+                <view class="good_box" hidden="{{good_box_hidden}}" style="left: {{bus_x}}px; top:{{bus_y}}px;"> 
+
+
+                </view>
+              </view>
+            
+         </view>
+         </navigator>
+         </view>
+        </block>
+
+
+
+      </view>
+
+    </view>
+  <!-- </view>  -->
+  </scroll-view>
+  <!-- 底部操作栏 -->
+<view class='cart-bottom' hidden='{{bottomShow}}'>
+  <!-- wx:if 是否全选显示不同图标 -->
+  <icon wx:if="{{selectAllStatus}}" class='cart-iconAll' type="success_circle" color="red" bindtap="selectAll" />
+  <icon wx:else type="circle" class='cart-iconAll' color="#ff7100" bindtap="selectAll" /> 
+  <text class='cart-allSelect' catchtap="selectAll">全选</text> 
+  <!-- 总价 -->
+  <text class='cart-allPrice'>合计:</text>
+  <text class='allPrice'>{{totalCount}}个</text> 
+  <button class='btn-red' bindtap='toBuy' form-type='submit'>加入购物车</button>
+</view>
+  <template is="tabbar" data="{{tabbar,num_top,num_left,numberofshoppingCarts}}" />
+</view>

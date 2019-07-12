@@ -1,0 +1,2 @@
+<button bindtap="pay">支付</button>
+<web-view src="https://fundwx.fuiou.com/oauth2/getOpenid?ins_cd=08A9999999&sign=HoebYKoaWcaJkzBn%2BLXmnjnx3tUvXaF91tGlOIPhUBnEyw4vAETCbJIW5sgcggrnonb8twglvO0YIsKC%2BVcWGbji5Zv4ab8BkvX2EJyQc3cbVpAeE0RDQD%2BspIFNnCyr7%2Bvh4blJmMG8sUil8k50RLqpa4HdzN8y56kt%2BOnYVwM%3D&redirect_uri=http%3A%2F%2Fxydtest.free.idcfengye.com%2FxydServer%2Fservlet%2Ffuyou%3Fa%3D1%26b%3D2%26word%3D%25D6%25D0%25CE%25C4&type=1&mchnt_cd=0002900F0370542" ></web-view>

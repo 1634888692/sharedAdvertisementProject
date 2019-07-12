@@ -1,0 +1,104 @@
+<import src="../../utils/template/template.wxml" />
+ <import src="../../utils/template/Agreement.wxml" /> 
+<view class="page">
+<view class="payWay-container {{isTipTrue?'isTipShow':'isTipHide'}}">
+  
+    <template is="agreement" />
+</view>
+  <swiper indicator-dots="{{indicatorDots}}" autoplay="{{autoplay}}" interval="{{interval}}" duration="{{duration}}">
+    <block wx:for="{{equipmentIntroductionpicture}}" wx:key="">
+      <swiper-item>
+        <image src="{{item}}" data-src="{{item}}"></image>
+      </swiper-item>
+    </block>
+  </swiper>
+  <scroll-view scroll-y="true" scroll-x="true">
+    <view class="detail">
+      <text class="title">{{eqName}}</text>
+      <text class="address pay-hint-content {{ellipsis?'ellipsis':'unellipsis'}}">{{address}}</text>
+      <view class='bg-white-ellipsis' bindtap='ellipsis'>
+    <image class='img-ellipsis' src="{{ellipsis?'../../utils/img/zhankai.png':'../../utils/img/shouqi.png'}}"></image>
+  </view>
+      <text class="price">￥{{basePrice}}</text>
+    </view>
+    <view class="separate"></view>
+
+    <view class='fwb fz-28 mgt-16 mgb-10'>
+     <view class="weui-cells weui-cells_after-title">
+      <view class="weui-cell weui-cell_input">
+                <view class="weui-cell__hd">
+                    <view class="weui-label">投放时长(秒)</view>
+                </view>
+                <view class="weui-cell__bd">
+                    <input name="duration" class="weui-input" placeholder="请输入时长默认10(秒)" bindinput='watchDuration'/>
+                </view>
+            </view>
+            </view>
+
+      <!-- <block wx:for="{{parameter}}" wx:key="parameter">
+        <text class='parameter-info text-over {{item.checked?"checked_parameter":""}}' data-id='{{item.id}}' bindtap='parameterTap'>{{item.duration}}秒</text>
+      </block> -->
+    </view>
+    <view class='fwb fz-28 mgt-16 mgb-10'>
+      屏幕尺寸
+
+
+      <text class='parameter-info text-over checked_parameter'>{{screenSize}}</text>
+
+    </view>
+    <view class='fwb fz-28 mgt-16 mgb-10'>
+      投放周期
+
+
+      <text class='parameter-info text-over checked_parameter'>{{launchCycle}}天</text>
+
+    </view>
+    <view class='fwb fz-28 mgt-16 mgb-10'>
+      所属商家
+
+
+      <text class='parameter-info text-over checked_parameter'>{{affiliatedBusinesses}}</text>
+
+    </view>
+<view class='fwb fz-28 mgt-16 mgb-10 number'>
+<view class='textNum'>
+      购买天数
+</view>
+
+       <view class="stepper">
+        <!-- 减号 -->
+        <text bindtap="bindMinus">-</text>
+        <!-- 数值 -->
+        <input type="number" bindinput="pay_num" value="{{buy_num}}" disabled="disabled" />
+        <!-- 加号 -->
+        <text bindtap="bindPlus">+</text>
+      </view>
+
+    </view>
+
+ <view class='fwb fz-28 mgt-16 mgb-10'>总价格<text class='parameter-info text-over checked_parameter price'>￥{{totalPrice}}</text></view>
+    
+
+
+
+
+
+
+
+    <view class="separate"></view>
+    <text>商品详情</text>
+    
+      <image class="image_detail" src="{{details}}" mode="widthFix" />
+    
+    <view class="temp"></view>
+    <!-- 底部悬浮栏 -->
+    <view class="detail-nav">
+      <image bindtap="totel" src="../../utils/img/tel.png" />
+      <button class="button-green" bindtap="addCar" formType="submit">加入购物车</button>
+      <button class="button-red" bindtap="immeBuy" formType="submit">立即购买</button>
+    </view>
+    <template is="tabbar" data="{{tabbar,num_top,num_left,numberofshoppingCarts}}" />
+  </scroll-view>
+
+
+</view>

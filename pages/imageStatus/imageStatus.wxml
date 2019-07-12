@@ -1,0 +1,106 @@
+<import src="../../utils/template/template.wxml" />
+<import src="../../utils/template/Agreement.wxml" />
+<!-- 切换栏 -->
+<view class="payWay-container {{isTipTrue?'isTipShow':'isTipHide'}}">
+  
+    <template is="agreement" />
+</view>
+<view class="swiper-tab">
+  <block wx:for="{{swipertab}}" wx:key="sptab">
+    <view class="swiper-tab-list {{currtab == item.index ? 'on' : ''}}" data-current="{{item.index}}" bindtap="tabSwitch">{{item.name}}</view>
+  </block>
+</view>
+ <!--currtab-->
+<swiper current="{{currtab}}" class="swiper-box" duration="300"  bindchange="tabChange" style="height:{{sysheight}}px;">
+  <!-- 完成 -->
+  <swiper-item >
+    <scroll-view class="hot-box" scroll-y="yes" style="height:100%;">
+   
+      <view  class="orderDetails" wx:for="{{check_data_list}}" wx:key=" ">
+        <view class="orderListTitle">
+          <text class="userName">{{item.deviceName}}</text>
+          <text class="orderStatus" catchtap='toUpdate' data-ordernumber="{{item.orderNumber}}">修改</text>
+        </view>
+        <view class="orderListDetails">
+          <view class="productImg">
+          <block wx:if="{{item.fileTye==1}}">
+            <image src="{{item.url}}" background-size="cover"></image>
+            </block>
+            <block wx:else>
+            <video src="{{item.url}}"  controls style='height:180rpx;width:120px'></video>
+            </block>
+          </view>
+          <view class="productInfo">
+            <view class="productTitle">时间: {{item.createTime}}</view>
+            <text class="productPrice">当前状态：{{item.checkStatus}}</text>
+          </view>
+        </view>
+        <view class="productCount">
+          <view>
+            <text></text>
+          </view>
+        </view>
+      </view>
+    </scroll-view>
+  </swiper-item>
+  <!-- 待付款 -->
+  <swiper-item>
+    <scroll-view class="hot-box" scroll-y="true"  style="height:100%;" bindscrolltoupper="bindscrolltoupper">
+  
+      <view class="orderDetails" wx:for="{{nocheck_data_list}}" wx:key=" ">
+        <view class="orderListTitle">
+           <text class="userName">{{item.deviceName}}</text>
+          <text class="orderStatus"  catchtap='toUpdate' data-ordernumber="{{item.orderNumber}}">修改</text>
+        </view>
+        <view class="orderListDetails">
+          <view class="productImg">
+          <block wx:if="{{item.fileTye==1}}">
+            <image src="{{item.url}}" background-size="cover"></image>
+            </block>
+            <block wx:else>
+            <video src="{{item.url}}"  controls style='height:180rpx;width:120px'></video>
+            </block>
+          </view>
+          <view class="productInfo">
+            <view class="productTitle">时间: {{item.createTime}}</view>
+            <text class="productPrice">当前状态：{{item.checkStatus}}</text>
+          </view>
+        </view>
+        <view class="productCount">
+          <view>
+             <text>申请退款</text>
+          </view>
+        </view>
+      </view>
+    </scroll-view>
+  </swiper-item>
+  
+  
+  <!-- 取消 -->
+  <swiper-item>
+    <scroll-view class="hot-box" scroll-y="true" style="height:100%;">
+      <view class="orderDetails" wx:for="{{lostOrder}}" wx:key=" ">
+        <view class="orderListTitle">
+         <text class="userName">{{item.name}}</text>
+          <text class="orderStatus">{{item.state}}</text>
+        </view>
+        <view class="orderListDetails">
+          <view class="productImg">
+            <image src="{{item.url}}" background-size="cover"></image>
+          </view>
+          <view class="productInfo">
+            <view class="productTitle">预定时间: {{item.time}}</view>
+            <text class="productPrice">当前状态：{{item.status}}</text>
+          </view>
+        </view>
+        <view class="productCount">
+          <view>
+             <text>合计：￥{{item.amount}}</text>
+          </view>
+        </view>
+      </view>
+    </scroll-view>
+  </swiper-item>
+ 
+</swiper>
+<template is="tabbar" data="{{tabbar,num_top,num_left,numberofshoppingCarts}}" />

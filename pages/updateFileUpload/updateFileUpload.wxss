@@ -1,0 +1,57 @@
+/*画廊*/
+
+.gallery {
+  /*margin-bottom: 100rpx;*/
+  display: flex;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+}
+
+/*每张图片所占容器*/
+
+.item {
+  position: relative;
+  margin: 5px;
+}
+.prew_video{
+    display: flex;
+    align-items: center; /*垂直居中*/
+    justify-content: center; /*居中对齐*/
+    position: relative;
+    background-color: #fff;
+}
+.prew_video[hidden]{
+    display: none;
+}
+.prew_video .play{
+    width: 48rpx;
+    height: 48rpx;
+}
+
+
+/*删除按钮*/
+
+.delete {
+  position: absolute;
+  height: 20px;
+  bottom: 0;
+  width: 100%;
+  background: #ccc;
+  opacity: 0.8;
+}
+
+.delete image {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+}
+
+.video{
+ display: flex;
+ flex-direction: column;
+ justify-content:center;
+}
+video{
+  margin-left: auto;
+  margin-right: auto;
+}

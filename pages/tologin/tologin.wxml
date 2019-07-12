@@ -1,0 +1,20 @@
+
+<view >
+    <view>
+        <view class='header'>
+            <image src='../../utils/img/logo.png'></image>
+        </view>
+ 
+        <view class='content'>
+            <view>申请获取以下权限</view>
+            <text>获得你的公开信息(昵称，头像等)</text>
+        </view>
+ 
+        <button wx:if="{{canIUse}}" class='bottom' type='primary' open-type="getUserInfo" lang="zh_CN" bindgetuserinfo="bindGetUserInfo">
+        <!--bindgetuserinfo="bindGetUserInfo"-->
+            授权登录
+        </button>
+        
+    </view>
+   
+</view>

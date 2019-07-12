@@ -1,0 +1,69 @@
+<view class="page__bd">
+
+  
+ 
+<!-- <view class="weui-btn-area" >
+    <picker bindchange="bindPickerChange" value='{{index}}' range='{{eqList_data}}' range-key="{{'name'}}">
+      <button type="default">{{eqList_data[index].name}}</button>
+    </picker>
+
+  </view> -->
+  
+  
+  
+ 
+  
+
+  <view class="weui-cells weui-cells_after-title">
+    <view class="weui-cell">
+      <view class="weui-cell__bd">开始时间</view>
+      <picker mode="date" value="{{startDate}}" start="{{startDate}}" bindchange="bindDateChange">
+        <view class="weui-cell__ft">当前选择: {{startDate}}</view>
+      </picker>
+    </view>
+  </view>
+ 
+</view>
+<view class="weui-cells weui-cells_after-title">
+
+      <view class="weui-cell weui-cell_switch">
+
+        <view class="weui-cell__bd">是传图片</view>
+
+        <view class="weui-cell__ft">
+
+          <switch bindchange="switchChange" checked />
+
+        </view>
+
+      </view>
+
+    </view>
+<view  hidden='{{fileHidden}}' class='video'>
+<video src="{{src}}" hidden="{{!hiddenVideo}}" controls></video>
+ <video id='myVideo' hidden="{{hiddenVideo}}" show-center-play-btn="{{true}}" src='{{src}}' controls="true" >
+  </video>
+ <button class="start_btn"   bindtap="addVideoTap" >添加视频</button>
+</view>
+
+<view class="gallery" hidden='{{!fileHidden}}'>
+
+  <view class="item" wx:for="{{images}}" wx:key="">
+
+    <image style="width: {{imageWidth}}px; height: {{imageWidth}}px" src="{{item}}" bindtap="previewImage" mode="aspectFill" />
+
+    <!-- 删除按钮 -->
+
+    <view class="delete" bindtap="delete" data-index="{{index}}">
+      <image style="left: {{imageWidth / 2 - 10}}px;" src="../../utils/img/delete.png" />
+    </view>
+
+  </view>
+
+  <view class="item">
+
+    <image style="width: {{imageWidth}}px; height: {{imageWidth}}px" src="../../utils/img/add.png" class="button-upload" bindtap="chooseImage" />
+
+  </view>
+</view>
+<button type="primary" bindtap="submit">提交</button>
