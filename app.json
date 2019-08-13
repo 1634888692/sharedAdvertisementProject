@@ -20,7 +20,12 @@
     "navigationBarTitleText": "E家广告",
     "navigationBarTextStyle": "black"
   },
-  
+  "plugins": {
+    "myPlugin": {
+      "version": "1.0.0",
+      "provider": "wx1362310fa2d2b02f"
+    }
+  },
   "sitemapLocation": "sitemap.json",
   "permission": {
     "scope.userLocation": {

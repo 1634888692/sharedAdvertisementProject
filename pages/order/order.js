@@ -16,7 +16,7 @@ Page({
       name: '待付款',
       index: 0
     }, {
-      name: '已完成',
+      name: '已付款',
       index: 1
     }, {
       name: '未完成',

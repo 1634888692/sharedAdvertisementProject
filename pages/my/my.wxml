@@ -71,12 +71,13 @@
       <text class="item-text">我的评价</text>
     </view>
     <view class="person-line"></view>
-    <view class="list-item">
-      <image class="item-image" src="../../utils/img/personal_share.png"></image>
-      <text class="item-text">推广邀请</text>
+    <view class="list-item" catchtap='clearData'>
+      <image class="item-image" src="../../utils/img/clear.png"></image>
+      <text class="item-text">清理缓存</text>
     </view>
   </view>
   <view class="separate"></view>
 </view>
+<official-account></official-account>
  <template is="tabbar" data="{{tabbar,num_top,num_left,numberofshoppingCarts}}" />
 </view>

@@ -93,9 +93,7 @@ Page({
       },
       success: function(res) {
         if (res.data.status == "200") {
-          console.log("++=" + that.data.buy_num)
-          console.log("++=" + inputTime / 10)
-
+         
           //计算总金额
           that.setData({
             totalPrice: that.accMul(that.accMul(inputTime / 10, that.data.basePrice), that.data.buy_num),
@@ -129,7 +127,7 @@ Page({
     })
     //重新加载页面
     wx.navigateTo({
-      url: '/pages/index/index',
+      url: '/pages/details/details?mac='+this.data.mac,
     })
   },
   //点击协议不同意
@@ -308,7 +306,8 @@ Page({
     this.set
     app.changeTabBar();
     this.setData({
-      numberofshoppingCarts: app.globalData.numberofshoppingCarts
+      numberofshoppingCarts: app.globalData.numberofshoppingCarts,
+      mac:mac
     })
 
     //通过设备的mac向后台请求查询详细数据
@@ -318,20 +317,8 @@ Page({
 
       num_left: app.globalData.ww / 2
     })
-    //购物车在页面上的位置
-    //创建节点选择器
-    // var query = wx.createSelectorQuery();
-    // //选择id
-    // query.select('.tabbar_icon1').boundingClientRect()
-    // query.exec(function(res) {
-
-
-    //   that.busPos = {};
-    //   that.busPos['x'] = (res[0].left + 20); //购物车的位置
-    //   that.busPos['y'] = (res[0].top)
-
-
-    // })
+    
+    
     wx.request({
       url: app.globalData.url + '/servlet/devices/details',
       data: {
@@ -347,7 +334,7 @@ Page({
           eqName: res.data.obj.deviceName,
           address: res.data.obj.address,
           phone: res.data.obj.phone,
-          affiliatedBusinesses: res.data.obj.fromUser,
+          industryName: res.data.obj.industryName,
           details: res.data.obj.detailsImg,
           parameter: that.data.parameter.concat(res.data.obj.products),
           productId: res.data.obj.products[0].id,
@@ -402,24 +389,22 @@ Page({
                 duration: 1000
               })
             }
-            if (res.data.obj.paySign != '') {
-              console.log('微信支付接口之前先生成签名成功')
-              console.log('签名：' + res.data.obj.paySign)
-              console.log('随机串：' + res.data.obj.nonceStr)
-              console.log('时间戳：' + res.data.obj.timeStamp)
+            if (res.data.obj.sdk_paysign != '') {
+              console.log(res.data.obj)
+              console.log(res.data.obj.sdk_package)
               //这个applyId一定要大写 而且签名的参数和调用方法的参数值一定要统一
               wx.requestPayment({
 
-                'timeStamp': res.data.obj.timeStamp,
-                'nonceStr': res.data.obj.nonceStr,
-                'package': res.data.obj.orderPackage,
-                'signType': 'MD5',
-                'paySign': res.data.obj.paySign,
+                'timeStamp': res.data.obj.sdk_timestamp,
+                'nonceStr': res.data.obj.sdk_noncestr,
+                'package': res.data.obj.sdk_package,
+                'signType': res.data.obj.sdk_signtype,
+                'paySign': res.data.obj.sdk_paysign,
                 'success': function(paymentRes) {
                   console.log(paymentRes)
                   //跳转到文件上传页面
                   wx.navigateTo({
-                    url: '/pages/fileUpload/fileUpload?orderNumber=' + res.data.obj.orderNumber,
+                    url: '/pages/fileUpload/fileUpload?orderNumber=' + res.data.obj.reserved_addn_inf + "&" + res.data.obj.sdk_package,
                   })
                 },
                 'fail': function(error) {
@@ -451,6 +436,7 @@ Page({
         that.setData({
           isTipTrue: true
         })
+       
       }
     })
 
@@ -490,8 +476,9 @@ Page({
       },
       fail: function() {
         //跳转到首页进行登录授权
+        //跳转到授权页面
         wx.navigateTo({
-          url: '/pages/index/index',
+          url: '/pages/tologin/tologin',
         })
       }
     })
@@ -537,7 +524,8 @@ Page({
   },
   //向后台校验时间是否合理函数
   checkTime:function(res){
-    if (this.data.timeLong.trim().length > 0) {
+    var timeLong= this.data.timeLong
+    if (timeLong>0) {
 
       if (!(/^\+?[1-9][0-9]*$/.test(this.data.timeLong))) {
         wx.showToast({
@@ -636,7 +624,7 @@ Page({
           })
         } else {
           wx.showToast({
-            title: '添加失败',
+            title: res1.data.msg,
             icon: 'success',
             duration: 1000
           })

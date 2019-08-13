@@ -144,7 +144,8 @@ Page({
     this.initTime();
     //初始化订单编号、
     this.setData({
-      orderNumber: options.orderNumber
+      orderNumber: options.orderNumber,
+      prepay_id: options.prepay_id
     })
 
   },
@@ -185,8 +186,8 @@ Page({
         fileId: that.data.fileId,
         startDate: that.data.startDate,
         param: param, 
-        orderNumber: that.data.orderNumber//订单编号
-
+        orderNumber: that.data.orderNumber,//订单编号
+prepay_id: that.data.prepay_id//用于微信小程序发消息参数
       },
       method: "get",
       success: function(e) {
@@ -262,7 +263,7 @@ Page({
         common.showLoading("图片上传中")
         //小程序自带的上传图片接口
         wx.uploadFile({
-          url: "https://upload.xyd999.net",
+          url: "http://xydtest.free.idcfengye.com/xydServer/servlet/uploadFile",
           filePath: tempFilePaths,
           name: 'file',
 

@@ -34,6 +34,15 @@ Page({
       }
     ],
   },
+  //清理缓存
+  clearData:function(){
+    wx.clearStorage()
+    wx.showToast({
+      title: '清理成功',
+      icon: 'success',
+      duration: 2000
+    })
+  },
   //点击未审核事件
   nocheck:function(){
     //跳转到未审核页面

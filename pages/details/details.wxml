@@ -54,10 +54,11 @@
 
     </view>
     <view class='fwb fz-28 mgt-16 mgb-10'>
-      所属商家
+      所属行业
 
-
-      <text class='parameter-info text-over checked_parameter'>{{affiliatedBusinesses}}</text>
+<block wx:for="{{industryName}}" wx:key="">
+      <text class='parameter-info text-over checked_parameter'>{{item}}</text>
+      </block>
 
     </view>
 <view class='fwb fz-28 mgt-16 mgb-10 number'>

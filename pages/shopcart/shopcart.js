@@ -120,10 +120,13 @@ Page({
           var totalPrice = that.accMul(that.accMul(inputTime / 10, that.data.list_data[index].price), that.data.list_data[index].purchaseQuantity)
           //计算总金额
           var up = "list_data[" + index + "].totalAmount"
+          //时长
+          var time = "list_data[" + index + "].timeLong"
           //var totalPrice = this.accMul(this.data.basePrice, buy_num);
           that.setData({
 
-            [up]: totalPrice
+            [up]: totalPrice,
+            [time]: inputTime
           })
         }else{
           wx.showToast({
@@ -229,6 +232,7 @@ Page({
     }
     if ("add" == y) {
      //投放时长除10*基价*购买数量
+      
       var totalPrice = this.accMul(this.accMul(this.data.list_data[index].timeLong / 10, this.data.list_data[index].price), this.data.list_data[index].purchaseQuantity)
 
       var up = "list_data[" + index + "].totalAmount"
@@ -238,7 +242,7 @@ Page({
         [up]: totalPrice
       })
 
-      console.log("======总价====" + this.data.totalPrice)
+     
     } else if ("sub" == y) {
       //
       var totalPrice = this.accMul(this.accMul(this.data.list_data[index].timeLong / 10, this.data.list_data[index].price), this.data.list_data[index].purchaseQuantity)
@@ -301,10 +305,17 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function(options) {
+    app.changeTabBar();
+
+    
     this.setData({
       page:0,
       list_data:[],
-      totalPrice:0
+      totalPrice:0,
+      numberofshoppingCarts: app.globalData.numberofshoppingCarts,
+      num_left: app.globalData.ww / 2,
+      screenHeight: app.globalData.hh,
+      screenWidth: app.globalData.ww
     })
     var that = this
     //校验用户是否登录
@@ -417,7 +428,7 @@ Page({
   /**
    * 页面相关事件处理函数--监听用户下拉动作
    */
-  onPullDownRefresh: function() {
+  bindscrolltoupper: function() {
     // 动态设置导航条标题
     wx.setNavigationBarTitle({
       title: '购物车'
@@ -432,7 +443,7 @@ Page({
   /**
    * 页面上拉触底事件的处理函数
    */
-  onReachBottom: function() {
+  bindscrolltolower: function() {
     var that = this
     wx.getStorage({
       key: 'param',
@@ -480,7 +491,7 @@ Page({
   selectList(e) {
     let that = this;
     const index = e.currentTarget.dataset.index; // 获取data- 传进来的index
-    console.log(index);
+   
 
     let selectAllStatus = that.data.selectAllStatus; //是否已经全选
     let str = true; //用str与每一项进行状态判断
@@ -533,12 +544,12 @@ Page({
           content: '购物车空空如也~',
           success: function(res) { //模糊层成功出来后
             if (res.confirm) {
-              console.log('用户点击确定')
+            
               that.setData({
                 selectAllStatus: false
               })
             } else {
-              console.log('用户点击取消')
+             
               that.setData({
                 selectAllStatus: false
               })
@@ -563,12 +574,12 @@ Page({
           content: '购物车空空如也~',
           success: function(res) { //模糊层成功出来后
             if (res.confirm) {
-              console.log('用户点击确定')
+              
               that.setData({
                 selectAllStatus: false
               })
             } else {
-              console.log('用户点击取消')
+             
               that.setData({
                 selectAllStatus: false
               })
@@ -688,7 +699,7 @@ Page({
   selectListThing(e) {
     let that = this;
     const index = e.currentTarget.dataset.index; // 获取data- 传进来的index
-    console.log(index);
+   
 
     let selectAllStatus = that.data.selectAllStatus; //是否已经全选
     let str = true; //用str与每一项进行状态判断
@@ -723,6 +734,91 @@ Page({
     that.getThingCartList()
 
   },
+  //向后台请求批量删除购物车
+  batchDeleteCart(shopCartId){
+    var that=this
+    wx.getStorage({
+      key: 'param',
+      success: function (res) {
+        wx.request({
+          url: app.globalData.url+'/servlet/batchDelShopCart',
+          method:"POST",
+          data:{
+            param:res.data,
+            shopId: shopCartId
+          },
+          header: {
+            'content-type': 'application/x-www-form-urlencoded'
+          },
+          success:function(e){
+            if(e.data.status=="200"){
+              that.onLoad();
+
+            }else{
+              wx.showToast({
+                title: '删除购物车失败',
+                icon: 'none',
+                duration: 2000
+              })
+            }
+
+
+          },
+          fail:function(){
+            wx.showToast({
+              title: '删除购物车失败',
+              icon: 'none',
+              duration: 2000
+            })
+          }
+        })
+      }})
+
+  },
+  //批量删除函数
+  batchDel(){
+var arr=[]
+    console.log(this.data.thingCarts)
+    for(var i=0;i<this.data.thingCarts.length;i++){
+      if (this.data.thingCarts[i].selected){
+        console.log("=======批量删除=======")
+        //拼装购物车id
+        arr.push(this.data.thingCarts[i].id)
+      }
+
+    }
+    let pList = arr.join(',');
+    this.batchDeleteCart(pList);
+
+
+  },
+  //批量删除
+  toDel:function(){
+    var that=this
+    var a = this.data.totalPrice;
+    if (a > 0) {
+      console.log("======去结算======")
+      wx.showModal({
+        title: '确定删除吗？',
+        
+        success(res) {
+          if (res.confirm) {
+            //console.log('用户点击确定')
+            that.batchDel();
+          } else if (res.cancel) {
+            console.log('用户点击取消')
+          }
+        }
+      })
+    } else {
+      common.hideLoading()
+      wx.showToast({
+        title: '请选中设备',
+        icon: 'none',
+        duration: 1000
+      })
+    }
+  },
   toBuy() {
     common.showLoading("加载中");
     var that = this
@@ -732,7 +828,7 @@ Page({
       success: function (res) {
         var a = that.data.totalPrice;
         if (a > 0) {
-          console.log("======去结算======")
+         
           that.pay();
         } else {
           common.hideLoading()
@@ -774,7 +870,7 @@ Page({
           success: function (callres) {
             if (callres.data.status == "200") {
               //进行支付
-              console.log("=======进行支付操作========")
+            
               //支付统一下单
               that.createUnifiedOrder();
 
@@ -809,7 +905,7 @@ Page({
           var index=
           console.log(a)
           if(a){
-            console.log("=======选中=======")
+           
             list.push(that.data.list_data[i].id)
 
          
@@ -825,11 +921,11 @@ Page({
   //统一下单函数
   unifiedOrder: function (shopCartId, amount, openid){
     var that=this
-    console.log("总金额===" + amount)
-    console.log("shopCartId===" + shopCartId)
-    console.log("openid===" + openid)
+    
+    //url: app.globalData.url + '/servlet/payment/createUnifiedOrder',
     wx.request({
-      url: app.globalData.url + '/servlet/payment/createUnifiedOrder',
+      
+      url:app.globalData.url +"/servlet/pay/fuyouPay",
       method: 'POST', // OPTIONS, GET, HEAD, POST, PUT, DELETE, TRACE, CONNECT
       // 当method 为POST 时 设置以下 的header 
       header: {
@@ -845,24 +941,22 @@ Page({
       },
       success: function (res) {
         common.hideLoading()
-        if (res.data.paySign != '') {
-          console.log('微信支付接口之前先生成签名成功')
-          console.log('签名：' + res.data.obj.paySign)
-          console.log('随机串：' + res.data.obj.nonceStr)
-          console.log('时间戳：' + res.data.obj.timeStamp)
+        if (res.data.obj.sdk_paysign != '') {
+         
+         
           //这个applyId一定要大写 而且签名的参数和调用方法的参数值一定要统一
           wx.requestPayment({
 
-            'timeStamp': res.data.obj.timeStamp,
-            'nonceStr': res.data.obj.nonceStr,
-            'package': res.data.obj.orderPackage,
-            'signType': 'MD5',
-            'paySign': res.data.obj.paySign,
+            'timeStamp': res.data.obj.sdk_timestamp,
+            'nonceStr': res.data.obj.sdk_noncestr,
+            'package': res.data.obj.sdk_package,
+            'signType': res.data.obj.sdk_signtype,
+            'paySign': res.data.obj.sdk_paysign,
             'success': function (paymentRes) {
               for(var i=0;i<that.data.list_data.length;i++){
                 var a = that.data.list_data[i].selected;
                 if(a){
-                  console.log("======调用删除购物车========")
+               
                   //调用删除购物车函数
                   that.deleteShopCart(1, that.data.list_data[i].id);
                  
@@ -876,7 +970,7 @@ Page({
               console.log(paymentRes)
               //跳转到文件上传页面
               wx.navigateTo({
-                url: '/pages/fileUpload/fileUpload?orderNumber='+res.data.obj.orderNumber,
+                url: '/pages/fileUpload/fileUpload?orderNumber=' + res.data.obj.reserved_addn_inf + "&" + res.data.obj.sdk_package,
               })
             
             },

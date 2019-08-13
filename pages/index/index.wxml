@@ -41,10 +41,14 @@
     </view>
 
   </view>
+  <dropdownmenu dropDownMenuTitle='{{dropDownMenuTitle}}' dropDownMenuFourthData='{{dropDownMenuFourthData}}' dropDownMenuFirstData='{{dropDownMenuFirstData}}'
+dropDownMenuSecondData='{{dropDownMenuSecondData}}' 
+dropDownMenuThirdData='{{dropDownMenuThirdData}}' bind:selectedItem='selectedFourth'/>
  <scroll-view style="height:{{screenHeight-49-50-51}}px" scroll-y bindscrolltolower="bindscrolltolower" bindscrolltoupper="bindscrolltoupper">
   <!-- <view class="page__bd" >  -->
     <view class="weui-panel weui-panel_access" >
-      <view class="weui-panel__hd">设备列表</view>
+      <!-- <view class="weui-panel__hd plug">列表
+</view> -->
       <view class="weui-panel__bd">
         <block wx:for="{{list_data}}" wx:key="">
         <view class='index-navigator'>
@@ -60,7 +64,13 @@
               <view class="weui-media-box__title">{{item.deviceName}}</view>
               <view class="weui-media-box__desc">{{item.address}}</view>
               <view class="weui-distance">
-                <text>距离{{item.distance}}km</text>
+                <block wx:if="{{item.distance<1}}">
+                <text>距离{{item.distance*1000}}m</text>
+                </block>
+                <block wx:else>
+                 <text>距离{{item.distance}}km</text>
+                   </block>
+
  <text>价格:￥{{item.products[0].price}}</text>
                 <!-- 点击加  点击事件catchtap='middlejia'-->
                 <image  style='background:#cb003c;' src='../../utils/img/gouwu.png' data-pid='{{item.products[0].id}}' catchtap='addShop'></image>

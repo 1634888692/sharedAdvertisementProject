@@ -1,6 +1,7 @@
-
+<import src="../../utils/template/template.wxml" />
 <import src="../../utils/template/Agreement.wxml" /> 
 <view class="page">
+<scroll-view style="height:{{screenHeight-49-51}}px" scroll-y bindscrolltolower="bindscrolltolower" bindscrolltoupper="bindscrolltoupper">
 <view class="payWay-container {{isTipTrue?'isTipShow':'isTipHide'}}">
   
     <template is="agreement" />
@@ -42,6 +43,7 @@
   </view>
   <view wx:if="{{isMyCartShow}}" class='bottom'>没有设备啦~_~</view>
 </view>
+</scroll-view>
 <!-- 物品 -->
 
 <!-- 底部操作栏 -->
@@ -53,6 +55,8 @@
   <!-- 总价 -->
   <text class='cart-allPrice'>合计:</text>
   <text class='allPrice'>￥{{totalPrice}}</text> 
-  <button class='btn-red' bindtap='toBuy' form-type='submit'>去结算</button>
+  <button class='btn-red btn-del' bindtap='toDel' form-type='submit'>删除</button> <button class='btn-red' bindtap='toBuy' form-type='submit'>去结算</button>
 </view>
+
+<template is="tabbar" data="{{tabbar,num_top,num_left,numberofshoppingCarts}}" />
 </view>

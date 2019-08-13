@@ -208,6 +208,7 @@ border-radius:29rpx;
 }
 .weui-label{
   width:80px;
+  font-size:30rpx
 
 }
 .pay-hint-content{
@@ -239,4 +240,7 @@ border-radius:29rpx;
   height: 25px;
   width: 25px
   
+}
+.weui-input{
+  font-size:30rpx
 }

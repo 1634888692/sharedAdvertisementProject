@@ -36,6 +36,7 @@ Page({
         if (data.status ==0) {
           app.globalData.lat = data.result.location.lat;
           app.globalData.lng = data.result.location.lng;
+          
           wx.redirectTo({
             url: '../index/index'
           })

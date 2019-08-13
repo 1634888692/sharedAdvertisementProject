@@ -1,4 +1,4 @@
 {
-  "usingComponents": {},
+  "usingComponents": {"dropdownmenu": "plugin://myPlugin/dropdownmenu"},
   "enablePullDownRefresh": true
 }

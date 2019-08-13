@@ -12,7 +12,7 @@
 </view>
  <!--currtab-->
 <swiper current="{{currtab}}" class="swiper-box" duration="300"  bindchange="tabChange" style="height:{{sysheight}}px;">
-  <!-- 完成 -->
+  <!-- 已审核 -->
   <swiper-item >
     <scroll-view class="hot-box" scroll-y="yes" style="height:100%;">
    
@@ -43,7 +43,7 @@
       </view>
     </scroll-view>
   </swiper-item>
-  <!-- 待付款 -->
+  <!--未审核 -->
   <swiper-item>
     <scroll-view class="hot-box" scroll-y="true"  style="height:100%;" bindscrolltoupper="bindscrolltoupper">
   
@@ -67,7 +67,7 @@
           </view>
         </view>
         <view class="productCount">
-          <view>
+          <view catchtap='reFund' data-ordernumber="{{item.orderNumber}}">
              <text>申请退款</text>
           </view>
         </view>
@@ -76,26 +76,26 @@
   </swiper-item>
   
   
-  <!-- 取消 -->
+  <!-- 审核未通过 -->
   <swiper-item>
-    <scroll-view class="hot-box" scroll-y="true" style="height:100%;">
-      <view class="orderDetails" wx:for="{{lostOrder}}" wx:key=" ">
+    <scroll-view bindscrolltoupper="bindscrolltoupper" class="hot-box" scroll-y="true" style="height:100%;">
+      <view class="orderDetails" wx:for="{{checkNo_data_list}}" wx:key=" ">
         <view class="orderListTitle">
-         <text class="userName">{{item.name}}</text>
-          <text class="orderStatus">{{item.state}}</text>
+         <text class="userName">{{item.deviceName}}</text>
+          <text class="orderStatus">未通过</text>
         </view>
         <view class="orderListDetails">
           <view class="productImg">
             <image src="{{item.url}}" background-size="cover"></image>
           </view>
           <view class="productInfo">
-            <view class="productTitle">预定时间: {{item.time}}</view>
-            <text class="productPrice">当前状态：{{item.status}}</text>
+            <view class="productTitle">预定时间: {{item.createTime}}</view>
+            <text class="productPrice">原因：{{item.reason}}</text>
           </view>
         </view>
         <view class="productCount">
           <view>
-             <text>合计：￥{{item.amount}}</text>
+             <!-- <text>合计：￥{{item.amount}}</text> -->
           </view>
         </view>
       </view>

@@ -1,6 +1,7 @@
 //index.js
 //获取应用实例
 const app = getApp()
+var plugin = requirePlugin("myPlugin");
 var common = require("../../utils/Common.js")
 var QQMapWX = require('../../utils/qqmap-wx-jssdk.min.js');
 var qqmapsdk;
@@ -9,6 +10,17 @@ var i = 0;
 
 Page({
   data: {
+    dropDownMenuTitle: ['地区', '行业', '价格', '排序'],
+    dropDownMenuFourthData: [{ id: 1, title: '智能排序' }, { id: 2, title: '发布时间' }, { id: 3, title: '距离优先' }],
+    dropDownMenuSecondData: [
+    ],
+    dropDownMenuThirdData: [
+      { id: 1, title: '0-5' },
+      { id: 2, title: '5-10' }, { id: 3, title: '10-15' }, { id: 4, title: '15-20' }],
+    adcode: 0,//区划代码
+    industryId: -1,//行业id
+    price: "0-20",//价格
+    //排序数据
     //判断小程序的API，回调，参数，组件等是否在当前版本可用。
     canIUse: wx.canIUse('button.open-type.getUserInfo'),
     isHide: false,
@@ -85,7 +97,7 @@ Page({
           })
         } else {
           wx.showToast({
-            title: '添加失败',
+            title: res.data.msg,
             icon: 'success',
             duration: 1000
           })
@@ -116,7 +128,7 @@ Page({
     let vm = this;
     wx.getSetting({
       success: (res) => {
-        console.log(JSON.stringify(res))
+      
         // res.authSetting['scope.userLocation'] == undefined    表示 初始化进入该页面
         // res.authSetting['scope.userLocation'] == false    表示 非初始化进入该页面,且未授权
         // res.authSetting['scope.userLocation'] == true    表示 地理位置授权
@@ -170,7 +182,7 @@ Page({
     wx.getLocation({
       type: 'wgs84',
       success: function(res) {
-        console.log(JSON.stringify(res))
+        
         var latitude = res.latitude
         var longitude = res.longitude
         var speed = res.speed
@@ -180,7 +192,8 @@ Page({
         vm.getLocal(latitude, longitude)
       },
       fail: function(res) {
-        console.log('fail' + JSON.stringify(res))
+       
+        vm.getLocal(0, 0)
       }
     })
   },
@@ -193,25 +206,27 @@ Page({
         longitude: longitude
       },
       success: function(res) {
-        console.log(JSON.stringify(res));
+       
         let province = res.result.ad_info.province
         let city = res.result.ad_info.city
         app.globalData.lat = latitude;
         app.globalData.lng = longitude
-
+        app.globalData.defaultCity = city
         vm.setData({
           province: province,
           city: city,
           latitude: latitude,
           longitude: longitude
         })
+        vm.getEquipmentList(0, null);
 
       },
       fail: function(res) {
-        console.log(res);
+       
+        vm.getEquipmentList(0, null);
       },
       complete: function(res) {
-        // console.log(res);
+       
       }
     });
   },
@@ -225,6 +240,7 @@ Page({
       this.setData({
         city: app.globalData.defaultCity
       }))
+   
 
   },
   bindGetUserInfo: function(e) {
@@ -232,8 +248,7 @@ Page({
       //用户按了允许授权按钮
       var that = this;
       // 获取到用户的信息了，打印到控制台上看下
-      console.log("用户的信息如下：");
-      console.log(e.detail.userInfo);
+     
       //授权成功后,通过改变 isHide 的值，让实现页面显示出来，把授权页面隐藏起来
       that.setData({
         isHide: false
@@ -260,33 +275,10 @@ Page({
     }
   },
 
-  // getSetting: function() {
-  //   var that = this;
-  //   // 查看是否授权
-  //   wx.getSetting({
-  //     success: function(res) {
-  //       if (res.authSetting['scope.userInfo']) {
-  //         wx.getUserInfo({
-  //           success: function(re) {
-  //             //用户已经授权
-  //             //向后台校验用户的信息
-  //             that.verifyUserinformation(re.userInfo);
+  
 
 
-  //           }
-  //         });
-  //       } else {
-  //         // 用户没有授权
-  //         // 改变 isHide 的值，显示授权页面
-  //         that.setData({
-  //           isHide: true
-  //         });
-  //       }
-  //     }
-  //   });
-
-
-  // },
+  
   //校验用户的信息
   verifyUserinformation: function(userInfo) {
     wx.getStorage({
@@ -313,7 +305,7 @@ Page({
   //页面显示
   onShow: function() {
     var that = this
-    console.log("index页面显示onShow")
+   
 
     wx.getStorage({
       key: 'param',
@@ -338,8 +330,17 @@ Page({
 
   },
   onLoad: function() {
-    console.log("index页面onLoad")
-    console.log(app.globalData.numberofshoppingCarts)
+    i = i + 1
+    
+    qqmapsdk = new QQMapWX({
+      key: 'VOPBZ-VTJ32-CYJUT-CIGOC-IQUJT-XFF23' //这里自己的key秘钥进行填充
+    });
+    
+    //this.getLocation();
+    //向后台请求行业名称数据
+    this.getIndustryData();
+    
+   
     this.setData({
       numberofshoppingCarts: app.globalData.numberofshoppingCarts
     })
@@ -348,28 +349,8 @@ Page({
       screenHeight: app.globalData.hh,
       screenWidth: app.globalData.ww
     })
-    var that = this
-    // wx.getStorage({
-    //   key: 'param',
-    //   success: function (res) {
-    //     //查看是否授权
-    //     that.getSetting();
-    //   },
-    //   fail:function(){
-    //     that.setData({
-    //       isHide: true
-    //     })
-    //   }
-    // })
-
-    i = i + 1
-    console.log("========onLoad===")
-    qqmapsdk = new QQMapWX({
-      key: 'VOPBZ-VTJ32-CYJUT-CIGOC-IQUJT-XFF23' //这里自己的key秘钥进行填充
-    });
-    if (i == 1) {
-      that.getUserLocation()
-    }
+   
+  
 
     //common.userLogin();
     var that = this;
@@ -379,7 +360,12 @@ Page({
 
       num_left: app.globalData.ww / 2
     })
-    this.getEquipmentList(0, null);
+    if (i == 1) {
+      this.getUserLocation()
+    }else{
+      this.getEquipmentList(0, null)
+    }
+   
 
   },
   //获取去后台设备列表数据函数
@@ -394,8 +380,7 @@ Page({
     this.setData({
       page: this.data.page + 1
     })
-    console.log("lng====" + app.globalData.lng)
-    console.log("lat====" + app.globalData.lat)
+   
     wx.request({
       url: app.globalData.url + "/servlet/devices/list",
       method: "GET",
@@ -403,7 +388,10 @@ Page({
         pageIndex: that.data.page,
         searchKeywords: searchKeywords,
         lng: app.globalData.lng,
-        lat: app.globalData.lat
+        lat: app.globalData.lat,
+        adcode:that.data.adcode,//区域代码
+        industryId:that.data.industryId,//行业
+        price:that.data.price//价格
 
       },
 
@@ -453,7 +441,7 @@ Page({
 
   },
   startAnimation: function(that, e) {
-    console.log("点击点的x==  " + that.finger['x'] + "   点击点的y=====  " + that.finger['y'])
+   
     var index = 0,
       bezier_points = that.linePos['bezier_points'];
     that.setData({
@@ -497,7 +485,7 @@ Page({
 
     that.finger = {};
     var topPoint = {};
-    console.log("点击点的x==  " + e.touches["0"].clientX + "   点击点的y=====  " + e.touches["0"].clientY)
+    
     that.finger['x'] = e.touches["0"].clientX; //点击的位置
     that.finger['y'] = e.touches["0"].clientY;
 
@@ -556,7 +544,7 @@ Page({
    * 页面上拉触底事件的处理函数
    */
   bindscrolltolower: function() {
-    console.log("=====加载=====")
+   
     //请求后台数据，查询设备列表数据
     if (this.data.inputVal == "") {
       this.getEquipmentList(1, null);
@@ -575,7 +563,7 @@ Page({
   },
   //输入搜索值变化是激发的函数
   inputTyping: function(e) {
-    console.log("输入的值：" + e.detail.value)
+  
     this.setData({
       inputVal: e.detail.value,
       page: 0,
@@ -590,7 +578,9 @@ Page({
       isHide: false,
       list_data: [],
       page: 0,
-      inputShowed: false
+      inputShowed: false,
+      selectshow:true,
+      bottomShow:true
     })
     this.getEquipmentList(0, null)
   },
@@ -608,7 +598,7 @@ Page({
   //选中事件
   selectList: function(e) {
     var index = e.currentTarget.dataset.index
-    console.log(e.currentTarget.dataset.index)
+   
     //判断是否选中，选中则清除选中，没有选中则选中
     if (this.data.list_data[index].selected) {
       //清除选中
@@ -678,6 +668,7 @@ if(a==0){
     wx.getStorage({
       key: 'param',
       success: function (res) {
+        common.showLoading("正在加入购物车")
         //向后台请求校验用户是否存在
         wx.request({
           url: app.globalData.url + '/servlet/login/verifyWx',
@@ -690,8 +681,10 @@ if(a==0){
               that.addbatchShop(res.data);
 
             }
+            common.hideLoading()
           },
           fail: function () {
+            common.hideLoading()
             wx.showToast({
               title: '添加购物车失败',
               icon: 'none',
@@ -715,7 +708,7 @@ if(a==0){
 
       }
     }
-    console.log("str==="+str)
+    
     //向后后台批量加入购物车
    this.addbatchShopFunction(str, count);
   },
@@ -735,7 +728,7 @@ if(a==0){
         if(res.data.status=="200"){
         
             that.setData({
-              numberofshoppingCarts: that.data.numberofshoppingCarts + count
+              numberofshoppingCarts: that.data.numberofshoppingCarts + res.data.obj
             })
 
           app.globalData.numberofshoppingCarts = app.globalData.numberofshoppingCarts + count
@@ -745,8 +738,9 @@ if(a==0){
             icon: 'none',
             duration: 2000
           })
-
+          common.hideLoading()
         }else{
+          common.hideLoading()
           wx.showToast({
             title: '加入购物车失败',
             icon: 'none',
@@ -764,6 +758,70 @@ if(a==0){
 
     })
 
+  },
+  //向后台请求行业数据函数
+  getIndustryData: function () {
+    var that = this
+    wx.request({
+      url: app.globalData.url + "/servlet/getIndustryData",
+      method: "GET",
+      data: {},
+      success: function (res) {
+        if (res.data.status == "200") {
+          that.setData({
+            dropDownMenuSecondData: that.data.dropDownMenuSecondData.concat(res.data.obj)
+          })
+
+        }
+
+      }
+    })
+  },
+
+  selectedFourth: function (e) {
+    if (e.detail.index == 1) {
+      if (e.detail.adcode){
+      //区域
+      this.setData({
+        adcode: e.detail.adcode
+      })
+      }
+    } else if (e.detail.index == 2) {
+      //行业
+      this.setData({
+        industryId: e.detail.selectedId
+      })
+    }
+    else if (e.detail.index == 3) {
+      //价格
+      this.setData({
+        price: e.detail.selectedTitle
+      })
+    }
+
+    //区划代码
+   
+    //向后台查询设备数据
+    this.setData({
+      page:0,
+      list_data:[],
+      selectshow:false,
+      bottomShow:false
+    })
+    this.getEquipmentList(0, null);
+  },
+  showDialog: function (e) {
+
+  },
+  //取消事件
+  _cancelEvent: function (e) {
+   
+    this.dialog.hideDialog();
+  },
+  //确认事件
+  _confirmEvent: function (e) {
+   
+    this.dialog.hideDialog();
   }
 
 
